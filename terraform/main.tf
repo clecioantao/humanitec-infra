@@ -30,3 +30,39 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   depends_on = [azurerm_container_registry.acr]
 }
+
+# Novo recurso - Storage Account e Container
+resource "azurerm_storage_account" "storage" {
+  name                     = var.storage_account_name
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+resource "azurerm_storage_container" "container" {
+  name                  = "test-container"
+  storage_account_name  = azurerm_storage_account.storage.name
+  container_access_type = "private"
+}
+
+output "acr_login_server" {
+  value = azurerm_container_registry.acr.login_server
+}
+
+output "kube_config" {
+  value     = azurerm_kubernetes_cluster.aks.kube_config_raw
+  sensitive = true
+}
+
+output "storage_account_name" {
+  value = azurerm_storage_account.storage.name
+}
+
+output "container_name" {
+  value = azurerm_storage_container.container.name
+}
+
+output "container_endpoint" {
+  value = azurerm_storage_account.storage.primary_blob_endpoint
+}
