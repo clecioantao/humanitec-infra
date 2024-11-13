@@ -1,4 +1,4 @@
-name: Deploy Terraform Infrastructure using HCP
+name: Provision Infrastructure with Terraform
 
 on:
   push:
@@ -6,28 +6,22 @@ on:
       - main
 
 jobs:
-  deploy:
+  terraform:
     runs-on: ubuntu-latest
 
     env:
-      HCP_TERRAFORM_TOKEN: ${{ secrets.HCP_TERRAFORM_TOKEN }}
       ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      HCP_TERRAFORM_TOKEN: ${{ secrets.HCP_TERRAFORM_TOKEN }}
 
     steps:
-      # Step 1: Checkout do repositório
+      # Step 1: Checkout do código
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Instalar o Terraform CLI
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_wrapper: false
-
-      # Step 3: Autenticar no HCP Terraform
+      # Step 2: Configurar autenticação do Terraform Cloud
       - name: Configure Terraform authentication
         run: |
           mkdir -p ~/.terraform.d
@@ -38,28 +32,13 @@ jobs:
               }
             }
           }' > ~/.terraform.d/credentials.tfrc.json
-        env:
-          HCP_TERRAFORM_TOKEN: ${{ secrets.HCP_TERRAFORM_TOKEN }}
 
+      # Step 3: Inicializar o Terraform
+      - name: Initialize Terraform
+        working-directory: ./terraform
+        run: terraform init
 
-      # Step 4: Inicializar o Terraform
-      - name: Terraform Init
-        run: |
-          cd terraform
-          terraform init
-
-      # Step 5: Executar o Terraform Plan
-      - name: Terraform Plan
-        run: |
-          cd terraform
-          terraform plan -out=tfplan \
-            -var "client_id=${ARM_CLIENT_ID}" \
-            -var "client_secret=${ARM_CLIENT_SECRET}" \
-            -var "subscription_id=${ARM_SUBSCRIPTION_ID}" \
-            -var "tenant_id=${ARM_TENANT_ID}"
-
-      # Step 6: Executar o Terraform Apply
-      - name: Terraform Apply
-        run: |
-          cd terraform
-          terraform apply -auto-approve tfplan
+      # Step 4: Executar o Terraform Apply
+      - name: Apply Terraform
+        working-directory: ./terraform
+        run: terraform apply -auto-approve
