@@ -14,25 +14,21 @@ jobs:
       AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      HCP_TERRAFORM_TOKEN: ${{ secrets.HCP_TERRAFORM_TOKEN }}
 
     steps:
       # Step 1: Checkout do repositório
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Configurar o diretório correto e inicializar o Terraform
-      - name: Set up Terraform
+      # Step 2: Configurar o Terraform e inicializar o backend remoto
+      - name: Initialize Terraform
         run: |
           cd terraform
-          terraform init
+          terraform init \
+            -backend-config="token=${{ secrets.HCP_TERRAFORM_TOKEN }}" 
 
-      # Step 3: Validar o código do Terraform
-      - name: Terraform Validate
-        run: |
-          cd terraform
-          terraform validate
-
-      # Step 4: Executar o plano do Terraform
+      # Step 3: Executar o plano do Terraform
       - name: Terraform Plan
         run: |
           cd terraform
@@ -42,7 +38,7 @@ jobs:
             -var "subscription_id=${AZURE_SUBSCRIPTION_ID}" \
             -var "tenant_id=${AZURE_TENANT_ID}"
 
-      # Step 5: Aplicar o plano do Terraform
+      # Step 4: Aplicar o plano do Terraform
       - name: Terraform Apply
         if: github.event_name == 'push'
         run: |

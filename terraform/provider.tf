@@ -1,5 +1,13 @@
 terraform {
   required_version = ">= 1.5.0"
+  backend "remote" {
+    organization = "labcle" # Nome da  organização
+
+    workspaces {
+      name = "humanitec-infra" # Nome do workspace criado no HCP Terraform
+    }
+  }
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
