@@ -9,6 +9,12 @@ jobs:
   provision:
     runs-on: ubuntu-latest
 
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+
     steps:
       # Step 1: Checkout do repositório
       - name: Checkout code
@@ -30,9 +36,13 @@ jobs:
       - name: Terraform Plan
         run: |
           cd terraform
-          terraform plan -out=tfplan
+          terraform plan -out=tfplan \
+            -var "client_id=${AZURE_CLIENT_ID}" \
+            -var "client_secret=${AZURE_CLIENT_SECRET}" \
+            -var "subscription_id=${AZURE_SUBSCRIPTION_ID}" \
+            -var "tenant_id=${AZURE_TENANT_ID}"
 
-      # Step 5: Aplicar o plano do Terraform (opcional)
+      # Step 5: Aplicar o plano do Terraform
       - name: Terraform Apply
         if: github.event_name == 'push'
         run: |
