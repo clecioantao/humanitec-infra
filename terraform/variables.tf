@@ -45,7 +45,7 @@ variable "aks_cluster_name" {
 }
 
 variable "storage_account_name" {
-  description = "Nome da Storage Account a ser criada no Azure"
+  description = "Nome da Storage Account"
   type        = string
-  default     = "humanitecpocstorage"
+  default     = "humanitecstorage"
 }

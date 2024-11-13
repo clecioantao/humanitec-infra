@@ -9,26 +9,19 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    env:
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      HCP_TERRAFORM_TOKEN: ${{ secrets.HCP_TERRAFORM_TOKEN }}
-
     steps:
       # Step 1: Checkout do código
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Configurar autenticação do Terraform Cloud
+      # Step 2: Configurar autenticação do Terraform
       - name: Configure Terraform authentication
         run: |
           mkdir -p ~/.terraform.d
           echo '{
             "credentials": {
               "app.terraform.io": {
-                "token": "'"${HCP_TERRAFORM_TOKEN}"'"
+                "token": "'"${{ secrets.HCP_TERRAFORM_TOKEN }}"'"
               }
             }
           }' > ~/.terraform.d/credentials.tfrc.json
@@ -37,4 +30,3 @@ jobs:
       - name: Initialize Terraform
         working-directory: ./terraform
         run: terraform init
-
