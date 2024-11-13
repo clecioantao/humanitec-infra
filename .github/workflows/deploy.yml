@@ -1,4 +1,4 @@
-name: Terraform Deployment
+name: Provision Azure Infrastructure with HCP Terraform
 
 on:
   push:
@@ -6,32 +6,35 @@ on:
       - main
 
 jobs:
-  terraform:
+  provision:
     runs-on: ubuntu-latest
 
-    env:
-      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-
     steps:
+      # Step 1: Checkout do repositório
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_wrapper: false
+      # Step 2: Configurar o diretório correto e inicializar o Terraform
+      - name: Set up Terraform
+        run: |
+          cd terraform
+          terraform init
 
-      - name: Terraform Init
-        run: terraform init
-
+      # Step 3: Validar o código do Terraform
       - name: Terraform Validate
-        run: terraform validate
+        run: |
+          cd terraform
+          terraform validate
 
+      # Step 4: Executar o plano do Terraform
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: |
+          cd terraform
+          terraform plan -out=tfplan
 
+      # Step 5: Aplicar o plano do Terraform (opcional)
       - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan
+        if: github.event_name == 'push'
+        run: |
+          cd terraform
+          terraform apply -auto-approve tfplan
