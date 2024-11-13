@@ -1,3 +1,19 @@
+terraform {
+  required_version = ">= 1.5.0"
+  backend "remote" {
+    organization = "labcle"
+
+    workspaces {
+      name = "humanitec-infra"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group
   location = var.location
