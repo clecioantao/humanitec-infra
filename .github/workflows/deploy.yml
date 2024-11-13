@@ -30,7 +30,7 @@ jobs:
       # Step 3: Autenticar no HCP Terraform
       - name: Configure Terraform authentication
         run: |
-          echo $HCP_TERRAFORM_TOKEN > ~/.terraform.d/credentials.tfrc.json
+          mkdir -p ~/.terraform.d
           echo '{
             "credentials": {
               "app.terraform.io": {
@@ -38,6 +38,9 @@ jobs:
               }
             }
           }' > ~/.terraform.d/credentials.tfrc.json
+        env:
+          HCP_TERRAFORM_TOKEN: ${{ secrets.HCP_TERRAFORM_TOKEN }}
+
 
       # Step 4: Inicializar o Terraform
       - name: Terraform Init
