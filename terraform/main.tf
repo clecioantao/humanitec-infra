@@ -57,3 +57,5 @@ output "container_name" {
 output "container_endpoint" {
   value = azurerm_storage_account.storage.primary_blob_endpoint
 }
+
+#
