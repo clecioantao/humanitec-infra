@@ -69,3 +69,5 @@ variable "TF_VAR_tenant_id" {
   description = "Azure Tenant ID"
   type        = string
 }
+
+#
