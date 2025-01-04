@@ -35,7 +35,7 @@ variable "location" {
 variable "acr_name" {
   description = "Nome do Azure Container Registry"
   type        = string
-  default     = "humanitecacr"
+  default     = "humanitecacrnew"
 }
 
 variable "aks_cluster_name" {
@@ -47,7 +47,7 @@ variable "aks_cluster_name" {
 variable "storage_account_name" {
   description = "Nome da Storage Account"
   type        = string
-  default     = "humanitecstorage"
+  default     = "humanitecstoragenew"
 }
 
 variable "TF_VAR_client_id" {
