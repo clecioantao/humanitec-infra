@@ -16,7 +16,6 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = "humanitec-poc"
-  api_version         = "2024-01-01"
 
   default_node_pool {
     name       = "default"
