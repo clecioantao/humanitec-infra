@@ -29,7 +29,7 @@ variable "resource_group" {
 variable "location" {
   description = "Localização onde os recursos serão criados no Azure"
   type        = string
-  default     = "northeurope"
+  default     = "westeurope"
 }
 
 variable "acr_name" {
